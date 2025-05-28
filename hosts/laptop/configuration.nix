@@ -3,7 +3,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, nixpkgs, nixpkgs-unstable, lib, inputs, ... }:
+{ config, pkgs, pkgs-unstable, lib, inputs, ... }:
 
 {
   imports =
@@ -103,7 +103,7 @@
   # $ nix search wget
   environment = {
     systemPackages = with pkgs; [
-      neovim
+      pkgs-unstable.neovim
       kitty
       firefox-devedition-bin
       rofi-wayland
