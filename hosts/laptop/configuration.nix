@@ -131,6 +131,7 @@
       texliveBasic
       playerctl
       ciscoPacketTracer8
+      gh
     ];
   };
 

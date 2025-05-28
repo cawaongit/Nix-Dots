@@ -10,10 +10,21 @@
 
   outputs = { nixpkgs, nixpkgs-unstable, ... } @ inputs:
   {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem rec {
+      system = "x86_64-linux";
+      specialArgs = {
+        inherit inputs;
+        pkgs = import nixpkgs {
+          config.allowUnfree = true;
+          inherit system;
+        };
+        pkgs-unstable = import nixpkgs-unstable {
+          config.allowUnfree = true;
+          inherit system;
+        };
+      };
       modules = [
-        ./configuration.nix
+        ./hosts/laptop/configuration.nix
       ];
     };
   };
