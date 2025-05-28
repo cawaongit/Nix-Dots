@@ -9,21 +9,18 @@
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, ... } @ inputs:
-  {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem rec {
+    let
       system = "x86_64-linux";
-      specialArgs = {
-        inherit inputs;
-        pkgs = import nixpkgs {
-          config.allowUnfree = true;
-          inherit system;
-        };
-        pkgs-unstable = import nixpkgs-unstable {
-          config.allowUnfree = true;
-          inherit system;
-        };
-      };
-      modules = [
+      baseModules = [
+        ./modules/overlays.nix
+      ];
+    in
+  {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit inputs; };
+
+      modules = baseModules ++ [
         ./hosts/laptop/configuration.nix
       ];
     };

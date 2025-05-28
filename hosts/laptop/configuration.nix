@@ -103,16 +103,16 @@
   # $ nix search wget
   environment = {
     systemPackages = with pkgs; [
-      pkgs-unstable.neovim
+      neovim
       kitty
-      firefox-devedition-bin
+      pkgs-unstable.firefox-devedition-bin
       rofi-wayland
-      discord
+      pkgs-unstable.discord
       hyprlock
       waybar
-      libreoffice-qt6-fresh
-      unzip
-      spotify
+      pkgs-unstable.libreoffice-qt6-fresh
+      pkgs-unstable.unzip
+      pkgs-unstable.spotify
       libgcc
       mangohud
       neofetch
@@ -132,6 +132,7 @@
       playerctl
       ciscoPacketTracer8
       gh
+      pyright
     ];
   };
 
