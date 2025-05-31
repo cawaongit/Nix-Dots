@@ -24,10 +24,10 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-  fileSystems."/run/media/ssd" = 
-    { device = "/dev/disk/by-uuid/40AB-618D";
-      fsType = "exfat";
-    };
+  #fileSystems."/run/media/ssd" = 
+   # { device = "/dev/disk/by-uuid/40AB-618D";
+    #  fsType = "exfat";
+    #};
 
   swapDevices = [ ];
 

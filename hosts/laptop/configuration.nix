@@ -3,7 +3,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, pkgs-unstable, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   imports =
@@ -105,14 +105,14 @@
     systemPackages = with pkgs; [
       neovim
       kitty
-      pkgs-unstable.firefox-devedition-bin
+      unstable.firefox-devedition-bin
       rofi-wayland
-      pkgs-unstable.discord
+      vesktop
       hyprlock
       waybar
-      pkgs-unstable.libreoffice-qt6-fresh
-      pkgs-unstable.unzip
-      pkgs-unstable.spotify
+      unstable.libreoffice-qt6-fresh
+      unzip
+      spotify
       libgcc
       mangohud
       neofetch
@@ -128,11 +128,25 @@
       catppuccin-cursors.mochaPeach
       curl
       hyprcursor
-      texliveBasic
+      texliveSmall
       playerctl
       ciscoPacketTracer8
       gh
       pyright
+      vscode
+      unityhub
+      putty
+      qFlipper
+      blender
+      bottles
+      lua5_1
+      ripgrep
+      nodejs_24
+      tree-sitter
+      mermaid-cli
+      wl-clipboard
+      ghostscript
+      fzf
     ];
   };
 
