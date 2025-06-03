@@ -54,19 +54,22 @@
     pipewire = {
       enable = true;
       alsa = {
-          enable = true;
-	  support32Bit = true;
-	};
-	pulse = {
-          enable = true;
-	};
+        enable = true;
+	      support32Bit = true;
+      };
+	  pulse = {
+      enable = true;
+    };
     };
     xserver = {
       xkb = {
         layout = "be";
-	variant = "nodeadkeys";
+	      variant = "nodeadkeys";
       };
-      videoDrivers = ["hardware.nvidia.open"];
+      videoDrivers = [
+        "modesetting"
+        "nvidia"
+      ];
     };
   };
 
@@ -80,9 +83,9 @@
     users = {
       sasha = {
         isNormalUser = true;
-	description = "Sasha";
-	extraGroups = [ "networkmanager" "wheel" ];
-	packages = with pkgs; [];
+	      description = "Sasha";
+	      extraGroups = [ "networkmanager" "wheel" ];
+	      packages = with pkgs; [];
       };
     };
     groups = {
@@ -99,7 +102,7 @@
     };
   };
 
-  # List packages installed in system profile. To search, run:
+  # List packages installed in system profile. To search, run
   # $ nix search wget
   environment = {
     systemPackages = with pkgs; [
@@ -147,6 +150,10 @@
       wl-clipboard
       ghostscript
       fzf
+      obs-studio
+      geogebra
+      hyprshot
+      lshw
     ];
   };
 
@@ -195,7 +202,20 @@
       enable32Bit = true;
     };
     nvidia = {
-      modesetting.enable = true;
+      modesetting = {
+        enable = true;
+      };
+      open = true;
+      nvidiaSettings = true;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      prime = {
+        offload = {
+          enable = true;
+          enableOffloadCmd = true;
+        };
+        intelBusId = "PCI:0:2:0";
+        nvidiaBusId = "PCI:2:0:0";
+      };
     };
   };
 
