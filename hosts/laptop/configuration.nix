@@ -9,6 +9,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      inputs.spicetify-nix.nixosModules.default
     ];
 
   # Bootloader.
@@ -17,6 +18,7 @@
       systemd-boot = {
         enable = true;
       };
+
       efi = {
         canTouchEfiVariables = true;
       };
@@ -45,31 +47,55 @@
     getty = {
       autologinUser = "sasha";
     };
+
     blueman = {
       enable = true;
     };
+
     udisks2 = {
       enable = true;
     };
+
     pipewire = {
       enable = true;
       alsa = {
         enable = true;
 	      support32Bit = true;
       };
+
 	  pulse = {
       enable = true;
     };
+  };
+
+  xserver = {
+    enable = true;
+    xkb = {
+      layout = "be";
+	    variant = "nodeadkeys";
     };
-    xserver = {
-      xkb = {
-        layout = "be";
-	      variant = "nodeadkeys";
+
+    videoDrivers = [
+      "modesetting"
+      "nvidia"
+    ];
+
+    displayManager = {
+      sddm = {
+        enable = true;
+        theme = "catppuccin-mocha";
+        package = pkgs.kdePackages.sddm;
+        wayland = {
+          enable = true;
+        };
       };
-      videoDrivers = [
-        "modesetting"
-        "nvidia"
-      ];
+    };
+
+      desktopManager = {
+        gnome = {
+          enable = true;
+        };
+      };
     };
   };
 
@@ -88,6 +114,7 @@
 	      packages = with pkgs; [];
       };
     };
+
     groups = {
       libvirtd = {
         members = ["sasha"];
@@ -154,8 +181,25 @@
       geogebra
       hyprshot
       lshw
+      (catppuccin-sddm.override {
+        flavor = "mocha";
+        font = "Noto Sans";
+        fontSize = "9";
+        #background = "${./wallpaper.png}";
+        loginBackground = true;
+      })
+      (pkgs.bottles.override {
+        removeWarningPopup = true;
+      })
     ];
   };
+
+  environment.gnome.excludePackages = with pkgs; [
+    geary
+    gnome-calculator
+    gnome-calendar
+
+  ];
 
   nix = {
     settings = {
@@ -167,20 +211,34 @@
     hyprland = {
       enable = true;
     };
+
     steam = {
       enable = true;
       gamescopeSession = {
           enable = true;
       };
     };
+
     git = {
       enable = true;
     };
+
     gamemode = {
       enable = true;
     };
+
     virt-manager = {
       enable = true;
+    };
+
+    spicetify =
+    let
+      spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
+    in 
+    {
+      enable = true;
+      theme = spicePkgs.themes.catppuccin;
+      colorScheme = "mocha";
     };
   };
 
@@ -197,14 +255,17 @@
       enable = true;
       powerOnBoot = true;
     };
+
     graphics = {
       enable = true;
       enable32Bit = true;
     };
+
     nvidia = {
       modesetting = {
         enable = true;
       };
+
       open = true;
       nvidiaSettings = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -213,6 +274,7 @@
           enable = true;
           enableOffloadCmd = true;
         };
+
         intelBusId = "PCI:0:2:0";
         nvidiaBusId = "PCI:2:0:0";
       };
