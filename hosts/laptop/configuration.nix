@@ -82,7 +82,6 @@
 
     displayManager = {
       sddm = {
-        enable = true;
         theme = "catppuccin-mocha";
         package = pkgs.kdePackages.sddm;
         wayland = {
@@ -98,6 +97,8 @@
       };
     };
   };
+
+  services.desktopManager.plasma6.enable = true;
 
   # Configure console keymap
   console = {
@@ -171,7 +172,7 @@
       bottles
       lua5_1
       ripgrep
-      nodejs_24
+      unstable.nodejs_24
       tree-sitter
       mermaid-cli
       wl-clipboard
@@ -181,6 +182,10 @@
       geogebra
       hyprshot
       lshw
+      virtualbox
+      wireshark
+      ghostty
+      fishPlugins.tide
       (catppuccin-sddm.override {
         flavor = "mocha";
         font = "Noto Sans";
@@ -188,17 +193,32 @@
         #background = "${./wallpaper.png}";
         loginBackground = true;
       })
-      (pkgs.bottles.override {
-        removeWarningPopup = true;
-      })
+      (python3.withPackages (ps: [ ps.pygame ]))
     ];
   };
 
   environment.gnome.excludePackages = with pkgs; [
+    baobab
+    epiphany
+    evince
+    file-roller
     geary
     gnome-calculator
     gnome-calendar
-
+    gnome-characters
+    gnome-clocks
+    gnome-console
+    gnome-contacts
+    gnome-connections
+    gnome-disk-utility
+    gnome-font-viewer
+    gnome-logs
+    gnome-maps
+    gnome-music
+    gnome-text-editor
+    gnome-weather
+    seahorse
+    simple-scan
   ];
 
   nix = {
@@ -239,6 +259,20 @@
       enable = true;
       theme = spicePkgs.themes.catppuccin;
       colorScheme = "mocha";
+    };
+
+    bash = {
+      interactiveShellInit = ''
+        if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+        then
+          shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+        fi
+      '';
+    };
+
+    fish = {
+      enable = true;
     };
   };
 
