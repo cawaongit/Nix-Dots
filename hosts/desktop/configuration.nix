@@ -10,7 +10,15 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       inputs.spicetify-nix.nixosModules.default
+      inputs.home-manager.nixosModules.home-manager
     ];
+
+  home-manager = {
+    extraSpecialArgs = { inherit inputs; };
+    users = {
+      "sasha" = import ./../../home.nix;
+    };
+  };
 
   # Bootloader.
   boot = {
@@ -136,7 +144,6 @@
       waybar
       unstable.libreoffice-qt6-fresh
       unzip
-      spotify
       libgcc
       mangohud
       neofetch
@@ -179,9 +186,21 @@
       wireshark
       ghostty
       lutris
+      home-manager
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
+
+    plasma6.excludePackages = with pkgs.libsForQt5; [
+      konsole
+      okular
+      ark
+      elisa
+    ];
+
+    sessionVariables = {
+      NIXOS_OZONZ_WL = "1";
+    };
   };
 
   nix = {
@@ -198,7 +217,7 @@
     steam = {
       enable = true;
       gamescopeSession = {
-          enable = true;
+        enable = true;
       };
     };
 
@@ -214,12 +233,24 @@
       enable = true;
     };
 
+    streamdeck-ui = {
+      enable = true;
+      autoStart = true;
+    };
+
     spicetify =
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
     in 
     {
       enable = true;
+
+      enabledExtensions = with spicePkgs.extensions; [
+        adblock
+        hidePodcasts
+        fullAppDisplay
+      ];
+
       theme = spicePkgs.themes.catppuccin;
       colorScheme = "mocha";
     };
@@ -278,6 +309,7 @@
       enable = true;
     };
   };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
