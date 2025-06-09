@@ -63,19 +63,10 @@
 	      support32Bit = true;
       };
 
-	  pulse = {
-      enable = true;
+	    pulse = {
+        enable = true;
+      };
     };
-  };
-
-  xserver = {
-    enable = true;
-    xkb = {
-      layout = "be";
-	    variant = "nodeadkeys";
-    };
-
-    videoDrivers = [ "nvidia" ];
 
     displayManager = {
       sddm = {
@@ -85,11 +76,20 @@
       };
     };
 
-      desktopManager = {
-        plasma6 = {
-          enable = true;
-        };
+    desktopManager = {
+      plasma6 = {
+        enable = true;
       };
+    };
+
+    xserver = {
+      enable = true;
+      xkb = {
+        layout = "be";
+	      variant = "nodeadkeys";
+      };
+
+      videoDrivers = [ "nvidia" ];
     };
   };
 
@@ -178,7 +178,9 @@
       virtualbox
       wireshark
       ghostty
+      lutris
       (python3.withPackages (ps: [ ps.pygame ]))
+      (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
   };
 
@@ -191,20 +193,6 @@
   programs = {
     hyprland = {
       enable = true;
-    };
-
-    starship = {
-      enable = true;
-      settings = {
-        add_newline = true;
-        command_timeout = 1300;
-        scan_timeout = 50;
-        format = "$all$nix_shell$nodejs$lua$golang$rust$php$git_branch$git_commit$git_state$git_status\n$username$hostname$directory";
-        character = {
-          success_symbol = "[](bold green) ";
-          error_symbol = "[✗](bold red) ";
-        };
-      };
     };
 
     steam = {
@@ -265,24 +253,14 @@
       powerOnBoot = true;
     };
 
-    opengl = {
+    graphics = {
       enable = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
     };
 
     nvidia = {
       modesetting = {
         enable = true;
-      };
-
-      prime = {
-        offload = {
-          enable = true;
-          enableOffloadCmd = true;
-        };
-
-      intelBusId = "PCI:0:2:0";
-      nvidiaBusId = "PCI:2:0:0";
       };
 
       open = false;
