@@ -71,6 +71,10 @@
 	      support32Bit = true;
       };
 
+      jack = {
+        enable = true;
+      };
+
 	    pulse = {
         enable = true;
       };
@@ -154,7 +158,7 @@
       lazygit
       fd
       python3
-      hyprpaper
+      swww
       pavucontrol
       catppuccin-cursors.mochaPeach
       curl
@@ -187,8 +191,18 @@
       ghostty
       lutris
       home-manager
+      htop
+      grim
+      slurp
+      dunst
+      networkmanagerapplet
+      mako
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
+      (pkgs.waybar.overrideAttrs (oldAttrs: {
+          mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+        })
+      )
     ];
 
     plasma6.excludePackages = with pkgs.libsForQt5; [
@@ -199,6 +213,7 @@
     ];
 
     sessionVariables = {
+      WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONZ_WL = "1";
     };
   };
@@ -213,6 +228,9 @@
     hyprland = {
       enable = true;
       package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+      xwayland = {
+        enable = true;
+      };
     };
 
     steam = {
@@ -308,6 +326,13 @@
   security = {
     rtkit = {
       enable = true;
+    };
+  };
+
+  xdg = {
+    portal = {
+      enable = true;
+      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
     };
   };
 

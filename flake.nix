@@ -23,9 +23,13 @@
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
     };
+
+    nvf = {
+      url = "github:notashelf/nvf";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, ... } @ inputs:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, nvf, ... } @ inputs:
     let
       system = "x86_64-linux";
       baseModules = [
@@ -33,6 +37,7 @@
       ];
     in
   {
+
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = { inherit inputs; };
