@@ -10,7 +10,15 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       inputs.spicetify-nix.nixosModules.default
+      inputs.home-manager.nixosModules.home-manager
     ];
+
+  home-manager = {
+    extraSpecialArgs = { inherit inputs; };
+    users = {
+      #"sasha" = import ./../../home.nix;
+    };
+  };
 
   # Bootloader.
   boot = {
@@ -63,42 +71,39 @@
 	      support32Bit = true;
       };
 
-	  pulse = {
-      enable = true;
-    };
-  };
+      jack = {
+        enable = true;
+      };
 
-  xserver = {
-    enable = true;
-    xkb = {
-      layout = "be";
-	    variant = "nodeadkeys";
+	    pulse = {
+        enable = true;
+      };
     };
-
-    videoDrivers = [
-      "modesetting"
-      "nvidia"
-    ];
 
     displayManager = {
       sddm = {
-        theme = "catppuccin-mocha";
-        package = pkgs.kdePackages.sddm;
         wayland = {
           enable = true;
         };
       };
     };
 
-      desktopManager = {
-        gnome = {
-          enable = true;
-        };
+    desktopManager = {
+      plasma6 = {
+        enable = true;
       };
     };
-  };
 
-  services.desktopManager.plasma6.enable = true;
+    xserver = {
+      enable = true;
+      xkb = {
+        layout = "be";
+	      variant = "nodeadkeys";
+      };
+
+      videoDrivers = [ "nvidia" ];
+    };
+  };
 
   # Configure console keymap
   console = {
@@ -143,7 +148,6 @@
       waybar
       unstable.libreoffice-qt6-fresh
       unzip
-      spotify
       libgcc
       mangohud
       neofetch
@@ -154,14 +158,14 @@
       lazygit
       fd
       python3
-      hyprpaper
+      swww
       pavucontrol
       catppuccin-cursors.mochaPeach
       curl
       hyprcursor
       texliveSmall
       playerctl
-      ciscoPacketTracer8
+      #ciscoPacketTracer8
       gh
       pyright
       vscode
@@ -185,41 +189,34 @@
       virtualbox
       wireshark
       ghostty
-      fishPlugins.tide
-      (catppuccin-sddm.override {
-        flavor = "mocha";
-        font = "Noto Sans";
-        fontSize = "9";
-        #background = "${./wallpaper.png}";
-        loginBackground = true;
-      })
+      lutris
+      home-manager
+      htop
+      grim
+      slurp
+      dunst
+      networkmanagerapplet
+      mako
       (python3.withPackages (ps: [ ps.pygame ]))
+      #(pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
+      (pkgs.waybar.overrideAttrs (oldAttrs: {
+          mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+        })
+      )
     ];
-  };
 
-  environment.gnome.excludePackages = with pkgs; [
-    baobab
-    epiphany
-    evince
-    file-roller
-    geary
-    gnome-calculator
-    gnome-calendar
-    gnome-characters
-    gnome-clocks
-    gnome-console
-    gnome-contacts
-    gnome-connections
-    gnome-disk-utility
-    gnome-font-viewer
-    gnome-logs
-    gnome-maps
-    gnome-music
-    gnome-text-editor
-    gnome-weather
-    seahorse
-    simple-scan
-  ];
+    plasma6.excludePackages = with pkgs.libsForQt5; [
+      konsole
+      okular
+      ark
+      elisa
+    ];
+
+    sessionVariables = {
+      WLR_NO_HARDWARE_CURSORS = "1";
+      NIXOS_OZONZ_WL = "1";
+    };
+  };
 
   nix = {
     settings = {
@@ -230,12 +227,16 @@
   programs = {
     hyprland = {
       enable = true;
+      package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+      xwayland = {
+        enable = true;
+      };
     };
 
     steam = {
       enable = true;
       gamescopeSession = {
-          enable = true;
+        enable = true;
       };
     };
 
@@ -251,12 +252,24 @@
       enable = true;
     };
 
+    streamdeck-ui = {
+      enable = true;
+      autoStart = true;
+    };
+
     spicetify =
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
     in 
     {
       enable = true;
+
+      enabledExtensions = with spicePkgs.extensions; [
+        adblock
+        hidePodcasts
+        fullAppDisplay
+      ];
+
       theme = spicePkgs.themes.catppuccin;
       colorScheme = "mocha";
     };
@@ -301,7 +314,6 @@
       };
 
       open = true;
-      nvidiaSettings = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       prime = {
         offload = {
@@ -325,6 +337,14 @@
       enable = true;
     };
   };
+
+  xdg = {
+    portal = {
+      enable = true;
+      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    };
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
