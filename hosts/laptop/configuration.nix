@@ -207,7 +207,7 @@
       )
     ];
 
-    plasma6.excludePackages = with pkgs.libsForQt5; [
+    plasma6.excludePackages = with pkgs.kdePackages; [
       konsole
       okular
       ark
@@ -349,7 +349,6 @@
       xdgOpenUsePortal = true;
       extraPortals = [ 
         pkgs.xdg-desktop-portal-gtk
-        #pkgs.xdg-desktop-portal-hyprland
       ];
       config = {
         common = {
