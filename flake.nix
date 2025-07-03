@@ -27,9 +27,14 @@
     nvf = {
       url = "github:notashelf/nvf";
     };
+  
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, nvf, ... } @ inputs:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, nvf, sops-nix, ... } @ inputs:
     let
       system = "x86_64-linux";
       baseModules = [
@@ -44,6 +49,16 @@
 
       modules = baseModules ++ [
         ./hosts/laptop/configuration.nix
+        sops-nix.nixosModules.sops
+      ];
+    };
+
+    nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit inputs; };
+
+      modules = [
+        ./hosts/isoimage/configuration.nix
       ];
     };
   };

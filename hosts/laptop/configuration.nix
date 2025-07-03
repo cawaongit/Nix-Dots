@@ -197,8 +197,10 @@
       dunst
       networkmanagerapplet
       mako
+      lazygit
+      vscode
       (python3.withPackages (ps: [ ps.pygame ]))
-      #(pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
+      (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
       (pkgs.waybar.overrideAttrs (oldAttrs: {
           mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
         })
@@ -214,7 +216,8 @@
 
     sessionVariables = {
       WLR_NO_HARDWARE_CURSORS = "1";
-      NIXOS_OZONZ_WL = "1";
+      NIXOS_OZONE_WL = "1";
+      #NIXOS_XDG_OPEN_USE_PORTAL = 1;
     };
   };
 
@@ -269,9 +272,6 @@
         hidePodcasts
         fullAppDisplay
       ];
-
-      theme = spicePkgs.themes.catppuccin;
-      colorScheme = "mocha";
     };
 
     bash = {
@@ -301,6 +301,11 @@
     bluetooth = {
       enable = true;
       powerOnBoot = true;
+      
+    };
+
+    flipperzero = {
+      enable = true;
     };
 
     graphics = {
@@ -341,7 +346,16 @@
   xdg = {
     portal = {
       enable = true;
-      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+      xdgOpenUsePortal = true;
+      extraPortals = [ 
+        pkgs.xdg-desktop-portal-gtk
+        #pkgs.xdg-desktop-portal-hyprland
+      ];
+      config = {
+        common = {
+          default= [ "hyprland" "gtk" ];
+        };
+      };
     };
   };
 
