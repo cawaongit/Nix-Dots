@@ -16,7 +16,7 @@
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users = {
-      #"sasha" = import ./../../home.nix;
+      "sasha" = import ./../../home.nix;
     };
   };
 
@@ -52,6 +52,10 @@
 
   # Configure keymap in X11
   services = {
+    dbus = {
+      enable = true;
+    };
+
     getty = {
       autologinUser = "sasha";
     };
@@ -76,6 +80,12 @@
       };
 
 	    pulse = {
+        enable = true;
+      };
+    };
+
+    gnome = {
+      gnome-keyring = {
         enable = true;
       };
     };
@@ -168,7 +178,7 @@
       #ciscoPacketTracer8
       gh
       pyright
-      vscode
+      unstable.vscode
       unityhub
       putty
       qFlipper
@@ -176,7 +186,7 @@
       bottles
       lua5_1
       ripgrep
-      unstable.nodejs_24
+      nodejs
       tree-sitter
       mermaid-cli
       wl-clipboard
@@ -201,10 +211,6 @@
       vscode
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
-      (pkgs.waybar.overrideAttrs (oldAttrs: {
-          mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-        })
-      )
     ];
 
     plasma6.excludePackages = with pkgs.kdePackages; [
@@ -217,7 +223,6 @@
     sessionVariables = {
       WLR_NO_HARDWARE_CURSORS = "1";
       NIXOS_OZONE_WL = "1";
-      #NIXOS_XDG_OPEN_USE_PORTAL = 1;
     };
   };
 
@@ -263,7 +268,7 @@
     spicetify =
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
-    in 
+    in
     {
       enable = true;
 
@@ -293,6 +298,7 @@
     packages = with pkgs; [
       nerd-fonts.fantasque-sans-mono
       nerd-fonts.jetbrains-mono
+      jetbrains-mono
       font-awesome
     ];
   };
@@ -301,7 +307,6 @@
     bluetooth = {
       enable = true;
       powerOnBoot = true;
-      
     };
 
     flipperzero = {
@@ -318,7 +323,7 @@
         enable = true;
       };
 
-      open = true;
+      open = false;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       prime = {
         offload = {
@@ -346,19 +351,14 @@
   xdg = {
     portal = {
       enable = true;
-      xdgOpenUsePortal = true;
-      extraPortals = [ 
-        pkgs.xdg-desktop-portal-gtk
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-wlr
       ];
-      config = {
-        common = {
-          default= [ "hyprland" "gtk" ];
-        };
-      };
     };
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
+# Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
   # programs.gnupg.agent = {
