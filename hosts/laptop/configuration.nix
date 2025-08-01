@@ -210,6 +210,7 @@
       gitkraken
       vscode
       jetbrains.idea-community
+      udiskie
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
@@ -354,6 +355,7 @@
       extraPortals = with pkgs; [
         xdg-desktop-portal-gtk
         xdg-desktop-portal-wlr
+        xdg-desktop-portal-hyprland
       ];
     };
   };

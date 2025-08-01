@@ -78,10 +78,9 @@
     windowManager = {
       hyprland = {
         enable = true;
-        package = null;
-        portalPackage = null;
 
-        plugins = [ inputs.hyprland-plugins.packages.${pkgs.system}.borders-plus-plus ];
+        plugins = [ inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.borders-plus-plus ];
+        #plugins = with pkgs.hyprlandPlugins; [ borders-plus-plus ];
 
         settings = {
           "$terminal" = "ghostty";
@@ -93,6 +92,7 @@
             "nm-applet --indicator"
             "waybar"
             "mako"
+            "udiskie"
           ];
 
           general = {

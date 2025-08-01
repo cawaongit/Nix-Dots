@@ -59,39 +59,18 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland, sops-nix, hy3, hyprland-plugins, ... } @ inputs:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, hyprland-plugins, ... } @ inputs:
     let
-      system = "x86_64-linux";
       baseModules = [
         ./modules/overlays.nix
       ];
     in
   {
-    #homeConfigurations."sasha@nixos" = home-manager.lib.homeManagerConfiguration {
-    #  pkgs = nixpkgs.legacyPackages.x86_64-linux;
-
-    #  modules = [
-    #    hyprland.homeManagerModules.default
-      
-    #  ];
-    #};
-
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      inherit system;
       specialArgs = { inherit inputs; };
 
       modules = baseModules ++ [
         ./hosts/laptop/configuration.nix
-        sops-nix.nixosModules.sops
-      ];
-    };
-
-    nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit inputs; };
-
-      modules = [
-        ./hosts/isoimage/configuration.nix
       ];
     };
   };
