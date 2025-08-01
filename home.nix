@@ -78,9 +78,12 @@
     windowManager = {
       hyprland = {
         enable = true;
+        package = pkgs.hyprland;
+        portalPackage = pkgs.xdg-desktop-portal-hyprland;
 
-        plugins = [ inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.borders-plus-plus ];
-        #plugins = with pkgs.hyprlandPlugins; [ borders-plus-plus ];
+        plugins = with pkgs.hyprlandPlugins; [ 
+          borders-plus-plus 
+        ];
 
         settings = {
           "$terminal" = "ghostty";
@@ -260,9 +263,9 @@
           ];
 
           plugin = {
-            hy3 = {
-
-            };
+            # hy3 = { - No Hy3 installed
+            # 
+            # };
           };
 
           "plugin:borders-plus-plus" = {

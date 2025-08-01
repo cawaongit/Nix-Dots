@@ -27,28 +27,7 @@
         };
       };
     };
-
-    hyprland = {
-      type = "git";
-      url = "https://github.com/hyprwm/Hyprland";
-      submodules = true;
-      inputs = {
-        nixpkgs = {
-          follows = "nixpkgs";
-        };
-      };
-    };
-
-    hy3 = {
-      url = "github:outfoxxed/hy3?href=hl0.50.0";
-      inputs.hyprland.follows = "hyprland";
-    };
-
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
-
+    
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs = {
@@ -59,7 +38,7 @@
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, hyprland-plugins, ... } @ inputs:
+  outputs = { nixpkgs, ... } @ inputs:
     let
       baseModules = [
         ./modules/overlays.nix
