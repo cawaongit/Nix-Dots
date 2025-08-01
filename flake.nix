@@ -29,20 +29,24 @@
     };
 
     hyprland = {
-      url = "github:hyprwm/Hyprland";
-    };
-
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
+      type = "git";
+      url = "https://github.com/hyprwm/Hyprland";
+      submodules = true;
       inputs = {
-        hyprland = {
-          follows = "hyprland";
+        nixpkgs = {
+          follows = "nixpkgs";
         };
       };
     };
 
-    nvf = {
-      url = "github:notashelf/nvf";
+    hy3 = {
+      url = "github:outfoxxed/hy3?href=hl0.50.0";
+      inputs.hyprland.follows = "hyprland";
+    };
+
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
     };
 
     sops-nix = {
@@ -55,7 +59,7 @@
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, nvf, sops-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland, sops-nix, hy3, hyprland-plugins, ... } @ inputs:
     let
       system = "x86_64-linux";
       baseModules = [
@@ -63,6 +67,14 @@
       ];
     in
   {
+    #homeConfigurations."sasha@nixos" = home-manager.lib.homeManagerConfiguration {
+    #  pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+    #  modules = [
+    #    hyprland.homeManagerModules.default
+      
+    #  ];
+    #};
 
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;

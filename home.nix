@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -80,6 +80,9 @@
         enable = true;
         package = null;
         portalPackage = null;
+
+        plugins = [ inputs.hyprland-plugins.packages.${pkgs.system}.borders-plus-plus ];
+
         settings = {
           "$terminal" = "ghostty";
           "$fileManager" = "dolphin";
@@ -255,6 +258,24 @@
 
             "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
           ];
+
+          plugin = {
+            hy3 = {
+
+            };
+          };
+
+          "plugin:borders-plus-plus" = {
+            add_borders = 1;
+
+            "col.border_1" = "rgb(ffffff)";
+            "col.border_2" = "rgb(2222ff)";
+
+            border_size_1 = 10;
+            border_size_2 = -1;
+
+            natural_rounding = "yes";
+          };
         };
       };
     };

@@ -151,7 +151,7 @@
     systemPackages = with pkgs; [
       neovim
       kitty
-      unstable.firefox-devedition-bin
+      unstable.firefox-devedition
       rofi-wayland
       vesktop
       hyprlock
@@ -207,8 +207,9 @@
       dunst
       networkmanagerapplet
       mako
-      lazygit
+      gitkraken
       vscode
+      jetbrains.idea-community
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
@@ -235,7 +236,6 @@
   programs = {
     hyprland = {
       enable = true;
-      package = inputs.hyprland.packages."${pkgs.system}".hyprland;
       xwayland = {
         enable = true;
       };
