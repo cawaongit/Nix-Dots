@@ -17,7 +17,8 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
+  home.packages = with pkgs; [
+    kitty
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -72,27 +73,64 @@
   };
 
   # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
+  programs = {
+    home-manager = {
+      enable = true;
+    };
+
+    kitty = {
+      enable= true;
+      settings = {
+        font_family = "JetBrainsMono Nerd Font";
+        font_size = 12;
+        bold_font = "auto";
+        italic_font = "auto";
+        bold_italic_font = "auto";
+        remember_window_size = "no";
+        initial_window_width = 950;
+        initial_window_height = 500;
+        cursor_blink_interval = 0.5;
+        cursor_stop_blinking_after = 1;
+        scrollback_lines = 2000;
+        wheel_scroll_min_lines = 1;
+        enable_audio_bell = "no";
+        window_padding_width = 10;
+        hide_window_decorations = "yes";
+        background_opacity = 0.7;
+        dynamic_background_opacity = "yes";
+        confirm_os_window_close = 0;
+        selection_foreground = "none";
+        selection_background = "none";
+      };
+    };
+  };
 
   wayland = {
     windowManager = {
       hyprland = {
         enable = true;
 
-        plugins = [ inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.borders-plus-plus ];
-        #plugins = with pkgs.hyprlandPlugins; [ borders-plus-plus ];
+        #package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+        portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+        #plugins = [ inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.borders-plus-plus ];
+        plugins = with pkgs.hyprlandPlugins; [ 
+          borders-plus-plus
+          hyprbars
+          hy3
+          hyprspace
+        ];
 
         settings = {
-          "$terminal" = "ghostty";
+          "$terminal" = "kitty";
           "$fileManager" = "dolphin";
           "$menu" = "rofi";
 
           exec-once = [
-            "swww"
             "nm-applet --indicator"
             "waybar"
             "mako"
             "udiskie"
+            "hyprpaper"
           ];
 
           general = {
@@ -208,11 +246,12 @@
             "$mainMod, M, exit,"
             "$mainMod, E, exec, $fileManager"
             "$mainMod, V, togglefloating,"
-            "$mainMod, R, exec, $menu -show drun -show-icons"
+            "$mainMod, SPACE, exec, $menu -show drun -show-icons"
             "$mainMod, P, pseudo,"
             "$mainMod, J, togglesplit,"
             "$mainMod, L, exec, hyprlock"
             "$mainMod SHIFT, PRINT, exec, grim -g slurp - | wl-copy"
+            "$mainMod SHIFT, C, exec, hyprpicker"
 
             "$mainMod, left, movefocus, l"
             "$mainMod, right, movefocus, r"
@@ -246,6 +285,7 @@
 
             "$mainMod, mouse_down, workspace, e+1"
             "$mainMod, mouse_up, workspace, e-1"
+            "$mainMod, G, exec, hyprctl dispatch overview:toggle"
           ];
 
           bindm = [
@@ -257,24 +297,39 @@
             "suppressevent maximize, class:.*"
 
             "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
+
+            "plugin:hyprbars:nobar rgb(ff0000), class:^(myClass)"
           ];
 
           plugin = {
             hy3 = {
 
             };
-          };
 
-          "plugin:borders-plus-plus" = {
-            add_borders = 1;
+            borders-plus-plus = {
+              add_borders = 1;
 
-            "col.border_1" = "rgb(ffffff)";
-            "col.border_2" = "rgb(2222ff)";
+              "col.border_1" = "rgb(ff0000)";
 
-            border_size_1 = 10;
-            border_size_2 = -1;
+              border_size_1 = 1;
+            };
 
-            natural_rounding = "yes";
+            hyprbars = {
+              bar_color = "rgb(30, 30, 30)";
+              bar_height = 30;
+              "col.text" = "rgb(200, 200, 200)";
+              bar_text_size = 12;
+              bar_text_font = "Jetbrains Mono Nerd Font Mono Bold";
+              bar_buttons_alignment = "left";
+              bar_precedence_over_border = true;
+              bar_padding = 5;
+              bar_button_padding = 5;
+              hyprbars-button =
+              [
+                "rgb(ff4040), 16, , hyprctl dispatch killactive"
+                "rgb(eeee11), 16, , hyprctl dispatch fullscreen 1"
+              ];
+            };
           };
         };
       };

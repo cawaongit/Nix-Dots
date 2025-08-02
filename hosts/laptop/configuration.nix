@@ -86,7 +86,7 @@
 
     gnome = {
       gnome-keyring = {
-        enable = true;
+        enable = false;
       };
     };
 
@@ -150,7 +150,6 @@
   environment = {
     systemPackages = with pkgs; [
       neovim
-      kitty
       unstable.firefox-devedition
       rofi-wayland
       vesktop
@@ -168,7 +167,6 @@
       lazygit
       fd
       python3
-      swww
       pavucontrol
       catppuccin-cursors.mochaPeach
       curl
@@ -190,6 +188,7 @@
       tree-sitter
       mermaid-cli
       wl-clipboard
+      cliphist
       ghostscript
       fzf
       obs-studio
@@ -211,6 +210,8 @@
       vscode
       jetbrains.idea-community
       udiskie
+      hyprpaper
+      hyprpicker
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
@@ -352,11 +353,6 @@
   xdg = {
     portal = {
       enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-gtk
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-hyprland
-      ];
     };
   };
 
