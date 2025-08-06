@@ -34,19 +34,31 @@
       submodules = true;
       inputs = {
         nixpkgs = {
-          follows = "nixpkgs";
+          follows = "nixpkgs-unstable";
         };
       };
     };
 
-    hy3 = {
-      url = "github:outfoxxed/hy3?href=hl0.50.0";
-      inputs.hyprland.follows = "hyprland";
-    };
-
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
+      inputs = {
+        hyprland = {
+          follows = "hyprland";
+        };
+      };
+    };
+
+    Hyprspace = {
+      url = "github:KZDKM/Hyprspace";
+      inputs = {
+        hyprland = {
+          follows = "hyprland";
+        };
+      };
+    };
+
+    nvf = {
+      url = "github:notashelf/nvf";
     };
 
     sops-nix = {
@@ -57,21 +69,46 @@
         };
       };
     };
+
+    millennium = {
+      url = "git+https://github.com/SteamClientHomebrew/Millennium";
+    };
+
+    stylix = {
+      url = "github:danth/stylix";
+      inputs = {
+        nixpkgs = {
+          follows = "nixpkgs";
+        };
+      };
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, hyprland, hyprland-plugins, ... } @ inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, hyprland, hyprland-plugins, nvf, sops-nix, millennium, stylix, ... } @ inputs:
     let
       baseModules = [
         ./modules/overlays.nix
       ];
     in
   {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
+    nixosConfigurations = {
 
-      modules = baseModules ++ [
-        ./hosts/laptop/configuration.nix
-      ];
+      laptop = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+
+        system = "x86_64-linux";
+        modules = baseModules ++ [
+          ./hosts/laptop/configuration.nix
+          nvf.nixosModules.default
+        ];
+      };
+
+      iso = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = baseModules ++ [
+          ./hosts/iso/configuration.nix
+        ];
+      };
     };
   };
 }

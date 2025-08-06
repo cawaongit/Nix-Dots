@@ -1,0 +1,24 @@
+{ pkgs, modulesPath, ... }: 
+
+{
+  imports = [
+    "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
+  ];
+
+  nixpkgs.hostPlatform = "x86_64-linux";
+
+  environment = {
+    systemPackages = with pkgs; [
+      neovim
+    ];
+  };
+
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+    };
+  };
+
+  programs.hyprland.enable = true;
+
+}

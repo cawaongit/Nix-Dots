@@ -1,1 +1,1 @@
-sudo nixos-rebuild switch --flake ~/nix-dots/#nixos
+sudo nixos-rebuild switch --flake ~/nix-dots/#laptop

@@ -3,7 +3,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports =
@@ -11,12 +11,22 @@
       ./hardware-configuration.nix
       inputs.spicetify-nix.nixosModules.default
       inputs.home-manager.nixosModules.home-manager
+      inputs.sops-nix.nixosModules.sops
     ];
 
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users = {
       "sasha" = import ./../../home.nix;
+    };
+  };
+
+  sops = {
+    defaultSopsFile = "./../../secrets.yaml";
+    defaultSopsFormat = "yaml";
+
+    age = {
+      keyFile = "~/.config/sops/age/keys.txt";
     };
   };
 
@@ -56,10 +66,6 @@
       enable = true;
     };
 
-    getty = {
-      autologinUser = "sasha";
-    };
-
     blueman = {
       enable = true;
     };
@@ -70,23 +76,21 @@
 
     pipewire = {
       enable = true;
+      wireplumber = {
+        enable = true;
+      };
+
       alsa = {
         enable = true;
-	      support32Bit = true;
+	support32Bit = true;
+      };
+
+      pulse = {
+        enable = true;
       };
 
       jack = {
         enable = true;
-      };
-
-	    pulse = {
-        enable = true;
-      };
-    };
-
-    gnome = {
-      gnome-keyring = {
-        enable = false;
       };
     };
 
@@ -104,11 +108,15 @@
       };
     };
 
+    mongodb = {
+      enable = true;
+    };
+
     xserver = {
       enable = true;
       xkb = {
         layout = "be";
-	      variant = "nodeadkeys";
+	variant = "nodeadkeys";
       };
 
       videoDrivers = [ "nvidia" ];
@@ -125,11 +133,16 @@
     users = {
       sasha = {
         isNormalUser = true;
-	      description = "Sasha";
-	      extraGroups = [ "networkmanager" "wheel" ];
-	      packages = with pkgs; [];
+	description = "Sasha";
+	extraGroups = [ 
+          "networkmanager"
+          "wheel"
+          "wireshark"
+        ];
       };
     };
+    
+    defaultUserShell = pkgs.fish;
 
     groups = {
       libvirtd = {
@@ -143,13 +156,16 @@
     config = {
       allowUnfree = true;
     };
+
+    #overlay = [
+      #inputs.millennium.overlays.default
+    #];
   };
 
   # List packages installed in system profile. To search, run
   # $ nix search wget
   environment = {
     systemPackages = with pkgs; [
-      neovim
       unstable.firefox-devedition
       rofi-wayland
       vesktop
@@ -157,46 +173,32 @@
       waybar
       unstable.libreoffice-qt6-fresh
       unzip
-      libgcc
       mangohud
-      neofetch
-      luarocks
-      gcc
+      fastfetch
       teams-for-linux
       superfile
       lazygit
-      fd
       python3
       pavucontrol
-      catppuccin-cursors.mochaPeach
       curl
-      hyprcursor
       texliveSmall
       playerctl
-      #ciscoPacketTracer8
+      ciscoPacketTracer8
       gh
-      pyright
       unstable.vscode
       unityhub
       putty
       qFlipper
       blender
       bottles
-      lua5_1
-      ripgrep
       nodejs
-      tree-sitter
-      mermaid-cli
       wl-clipboard
       cliphist
-      ghostscript
       fzf
       obs-studio
       geogebra
       hyprshot
       lshw
-      virtualbox
-      wireshark
       ghostty
       lutris
       home-manager
@@ -205,13 +207,27 @@
       slurp
       dunst
       networkmanagerapplet
-      mako
       gitkraken
       vscode
-      jetbrains.idea-community
+      unstable.jetbrains.idea-community
       udiskie
       hyprpaper
       hyprpicker
+      nwg-look
+      papirus-icon-theme
+      brightnessctl
+      hypridle
+      hyprsysteminfo
+      hyprpolkitagent
+      kdePackages.qt6ct
+      eza
+      nixd
+      grim
+      slurp
+      swappy
+      libnotify
+      mongodb-compass
+      mongosh
       (python3.withPackages (ps: [ ps.pygame ]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
@@ -221,6 +237,7 @@
       okular
       ark
       elisa
+      kate
     ];
 
     sessionVariables = {
@@ -238,8 +255,164 @@
   programs = {
     hyprland = {
       enable = true;
+      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+      portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
       xwayland = {
         enable = true;
+      };
+    };
+
+    java = {
+      enable = true;
+    };
+
+    nvf = {
+      enable = true;
+      settings = {
+        vim = {
+          theme = {
+            enable = true;
+            name = "gruvbox";
+            style = "dark";
+          };
+
+          terminal = {
+            toggleterm = {
+              enable = true;
+            };
+          };
+
+          visuals = {
+            nvim-web-devicons = {
+              enable = true;
+            };
+          };
+
+          filetree = {
+            neo-tree = {
+              enable = true;
+            };
+          };
+
+          git = {
+            gitsigns = {
+              enable = true;
+            };
+          };
+
+          dashboard = {
+            startify = {
+              sessionPersistence = true;
+            };
+          };
+
+          formatter = {
+            conform-nvim = {
+              enable = true;
+            };
+          };
+
+          utility = {
+            snacks-nvim = {
+              enable = true;
+              setupOpts = {
+                indent = true;
+                input = true;
+                notifier = true;
+                scope = true;
+                scroll = true;
+                statuscolumn = false;
+                words = true;
+              };
+            };
+
+            motion = {
+              flash-nvim = {
+                enable = true;
+              };
+            };
+          };
+
+          mini = {
+            icons = {
+              enable = true;
+            };
+
+            pairs = {
+              enable = true;
+            };
+          };
+
+          ui = {
+            noice = {
+              enable = true;
+            };
+          };
+
+          tabline = {
+            nvimBufferline = {
+              enable = true;
+            };
+          };
+
+          lsp = {
+            enable = true;
+            lspconfig = {
+              enable = true;
+            };
+
+            trouble = {
+              enable = true;
+            };
+          };
+
+          languages = {
+            enableTreesitter = true;
+            nix = {
+              enable = true;
+            };
+
+            ts ={
+              enable = true;
+            };
+
+            css = {
+              enable = true;
+            };
+
+            html = {
+              treesitter = {
+                autotagHtml = true;
+              };
+            };
+          };
+
+          statusline = {
+            lualine = {
+              enable = true;
+            };
+          };
+
+          telescope = {
+            enable = true;
+          };
+
+          autocomplete = {
+            nvim-cmp = {
+              enable = true;
+            };
+          };
+
+          treesitter = {
+            textobjects = {
+              enable = true;
+            };
+
+            indent = {
+              enable = true;
+            };
+          };
+        };
       };
     };
 
@@ -269,7 +442,7 @@
 
     spicetify =
     let
-      spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
+      spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
     in
     {
       enable = true;
@@ -279,16 +452,6 @@
         hidePodcasts
         fullAppDisplay
       ];
-    };
-
-    bash = {
-      interactiveShellInit = ''
-        if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-        then
-          shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-        fi
-      '';
     };
 
     fish = {

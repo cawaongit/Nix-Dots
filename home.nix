@@ -1,10 +1,15 @@
-{ config, pkgs, inputs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "sasha";
-  home.homeDirectory = "/home/sasha";
+  home = {
+    username = "sasha";
+  };
+
+  home = {
+    homeDirectory = "/home/sasha";
+  };
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -13,12 +18,15 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "25.05"; # Please read the comment before changing.
+  home = {
+    stateVersion = "25.05"; # Please read the comment before changing.
+  };
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = with pkgs; [
-    kitty
+  home = {
+    packages = with pkgs; [
+      kitty
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -35,11 +43,13 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
-  ];
+    ];
+  };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
-  home.file = {
+  home = {
+    file = {
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
@@ -50,6 +60,7 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+    };
   };
 
   # Home Manager can also manage your environment variables through
@@ -68,14 +79,99 @@
   #
   #  /etc/profiles/per-user/sasha/etc/profile.d/hm-session-vars.sh
   #
-  home.sessionVariables = {
-    # EDITOR = "emacs";
+
+  home = {
+    sessionVariables = {
+      # EDITOR = "emacs";
+    };
   };
+
+  services = {
+    hyprpaper = {
+      enable = true;
+      settings = {
+        preload = [
+          "~/nix-dots/stupeflip.jpg"
+        ];
+
+        wallpaper = [
+          ", ~/nix-dots/stupeflip.jpg"
+        ];
+      };
+    };
+
+    hypridle = {
+      enable = true;
+      settings = {
+        general = {
+          lock_cmd ="pidof hyprlock || hyprlock";
+          before_sleep_cmd = "loginctl lock-session";
+          after_sleep_cmd = "hyprctl dispatch dpms on";
+        };
+
+        listener = [
+          {
+            timeout = 480;
+            on-timeout = "brightnessctl -s set 10";
+            on-resume = "brightnessctl -r";
+          }
+          {
+            timeout = 480;
+            on-timeout = "brightnessctl -sd intel_backlight set 0";
+            on-resume = "brightnessctl -rd intel_backlight";
+          }
+          {
+            timeout = 600;
+            on-timeout = "loginctl lock-session";
+          }
+          {
+            timeout = 660;
+            on-timeout = "hyprctl dispatch dmps off";
+            on-resume = "hyprctl dispatch dmps on && brightnessctl -r";
+          }
+          {
+            timeout = 1800;
+            on-timeout = "systemctl suspend";
+          }
+        ];
+      };
+    };
+
+    mako = {
+      enable = true;
+      settings = {
+        defaultTimeout = 5000;
+      };
+    };
+  };
+
+  #xdg = {
+  #  configFile = {
+  #    "lf/icons" = {
+  #      source = ./icons;
+  #    };
+  #  };
+  #};
 
   # Let Home Manager install and manage itself.
   programs = {
     home-manager = {
       enable = true;
+    };
+
+    lf = {
+      enable = true;
+      settings = {
+        preview = true;
+        hidden = true;
+        drawbox = true;
+        icons = true;
+        ignoreCase = true;
+      };
+
+      commands = {
+        editor-open = ''$$EDITOR $f'';
+      };
     };
 
     kitty = {
@@ -110,14 +206,12 @@
       hyprland = {
         enable = true;
 
-        #package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+        package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
         portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-        #plugins = [ inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.borders-plus-plus ];
-        plugins = with pkgs.hyprlandPlugins; [ 
-          borders-plus-plus
-          hyprbars
-          hy3
-          hyprspace
+        plugins = [
+          inputs.hyprland-plugins.packages.${pkgs.stdenv.hostPlatform.system}.hyprbars
+
+          inputs.Hyprspace.packages.${pkgs.system}.Hyprspace
         ];
 
         settings = {
@@ -128,20 +222,17 @@
           exec-once = [
             "nm-applet --indicator"
             "waybar"
-            "mako"
             "udiskie"
             "hyprpaper"
+            "hypridle"
+            "hyprpolkitagent"
+            "mako"
+            "wl-paste --type text --watch cliphist store"
+            "wl-paste --type image --watch cliphist store"
+            "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           ];
 
           general = {
-            gaps_in = 5;
-            gaps_out = 20;
-
-            border_size = 2;
-
-            "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
-            "col.inactive_border" = "rgba(595959aa)";
-
             resize_on_border = false;
 
             allow_tearing = false;
@@ -158,7 +249,7 @@
 
             shadow = {
               enabled = true;
-              range = 4;
+              range = 10;
               render_power = 3;
               color = "rgba(1a1a1aee)";
             };
@@ -250,7 +341,7 @@
             "$mainMod, P, pseudo,"
             "$mainMod, J, togglesplit,"
             "$mainMod, L, exec, hyprlock"
-            "$mainMod SHIFT, PRINT, exec, grim -g slurp - | wl-copy"
+            ",Print, exec, grim -g \"$(slurp)\" - | swappy -f -"
             "$mainMod SHIFT, C, exec, hyprpicker"
 
             "$mainMod, left, movefocus, l"
@@ -298,22 +389,16 @@
 
             "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
 
-            "plugin:hyprbars:nobar rgb(ff0000), class:^(myClass)"
+            "float, class:.*"
+
+            "opacity 0.0 override, class:^(xwaylandvideobridge)$"
+            "noanim, class:^(xwaylandvideobridge)$"
+            "noinitialfocus, class:^(xwaylandvideobridge)$"
+            "maxsize 1 1,class:^(xwaylandvideobridge)$"
+            "maxsize 1 1,class:^(xwaylandvideobridge)$"
           ];
 
           plugin = {
-            hy3 = {
-
-            };
-
-            borders-plus-plus = {
-              add_borders = 1;
-
-              "col.border_1" = "rgb(ff0000)";
-
-              border_size_1 = 1;
-            };
-
             hyprbars = {
               bar_color = "rgb(30, 30, 30)";
               bar_height = 30;
@@ -327,7 +412,7 @@
               hyprbars-button =
               [
                 "rgb(ff4040), 16, , hyprctl dispatch killactive"
-                "rgb(eeee11), 16, , hyprctl dispatch fullscreen 1"
+                "rgb(eeee11), 16, , hyprctl dispatch togglefloating"
               ];
             };
           };
