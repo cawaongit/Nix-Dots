@@ -102,13 +102,6 @@
           nvf.nixosModules.default
         ];
       };
-
-      iso = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = baseModules ++ [
-          ./hosts/iso/configuration.nix
-        ];
-      };
     };
   };
 }

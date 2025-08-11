@@ -1,21 +1,19 @@
-
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, inputs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      inputs.spicetify-nix.nixosModules.default
-      inputs.home-manager.nixosModules.home-manager
-      inputs.sops-nix.nixosModules.sops
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    inputs.spicetify-nix.nixosModules.default
+    inputs.home-manager.nixosModules.home-manager
+    inputs.sops-nix.nixosModules.sops
+  ];
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = {inherit inputs;};
     users = {
       "sasha" = import ./../../home.nix;
     };
@@ -80,9 +78,30 @@
         enable = true;
       };
 
+      extraConfig = {
+        pipewire-pulse = {
+          "15-force-s16-info" = {
+            "pulse.rules" = [
+              {
+                actions = {
+                  quirks = [
+                    "force-s16-info"
+                  ];
+                };
+                matches = [
+                  {
+                    "application.process.binary" = "my-broken-app";
+                  }
+                ];
+              }
+            ];
+          };
+        };
+      };
+
       alsa = {
         enable = true;
-	support32Bit = true;
+        support32Bit = true;
       };
 
       pulse = {
@@ -116,10 +135,10 @@
       enable = true;
       xkb = {
         layout = "be";
-	variant = "nodeadkeys";
+        variant = "nodeadkeys";
       };
 
-      videoDrivers = [ "nvidia" ];
+      videoDrivers = ["nvidia"];
     };
   };
 
@@ -133,15 +152,15 @@
     users = {
       sasha = {
         isNormalUser = true;
-	description = "Sasha";
-	extraGroups = [ 
+        description = "Sasha";
+        extraGroups = [
           "networkmanager"
           "wheel"
           "wireshark"
         ];
       };
     };
-    
+
     defaultUserShell = pkgs.fish;
 
     groups = {
@@ -155,10 +174,13 @@
   nixpkgs = {
     config = {
       allowUnfree = true;
+      permittedInsecurePackages = [
+        "ventoy-qt5-1.1.05"
+      ];
     };
 
     #overlay = [
-      #inputs.millennium.overlays.default
+    #inputs.millennium.overlays.default
     #];
   };
 
@@ -174,7 +196,6 @@
       unstable.libreoffice-qt6-fresh
       unzip
       mangohud
-      fastfetch
       teams-for-linux
       superfile
       lazygit
@@ -209,7 +230,7 @@
       networkmanagerapplet
       gitkraken
       vscode
-      unstable.jetbrains.idea-community
+      unstable.jetbrains.idea-community-bin
       udiskie
       hyprpaper
       hyprpicker
@@ -227,8 +248,13 @@
       swappy
       libnotify
       mongodb-compass
-      mongosh
-      (python3.withPackages (ps: [ ps.pygame ]))
+      alejandra
+      nixd
+      unstable.pulsemeeter
+      ventoy-full-qt
+      libsForQt5.qt5.qtwayland
+      vlc
+      (python3.withPackages (ps: [ps.pygame]))
       (pkgs.callPackage ./../../pkgs/crafted-launcher.nix {})
     ];
 
@@ -248,8 +274,12 @@
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = ["nix-command" "flakes"];
     };
+
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs}"
+    ];
   };
 
   programs = {
@@ -372,7 +402,7 @@
               enable = true;
             };
 
-            ts ={
+            ts = {
               enable = true;
             };
 
@@ -440,11 +470,9 @@
       autoStart = true;
     };
 
-    spicetify =
-    let
+    spicetify = let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-    in
-    {
+    in {
       enable = true;
 
       enabledExtensions = with spicePkgs.extensions; [
@@ -503,8 +531,17 @@
   };
 
   virtualisation = {
-    libvirtd.enable = true;
-    spiceUSBRedirection.enable = true;
+    libvirtd = {
+      enable = true;
+    };
+
+    spiceUSBRedirection = {
+      enable = true;
+    };
+
+    docker = {
+      enable = true;
+    };
   };
 
   security = {
@@ -519,7 +556,7 @@
     };
   };
 
-# Some programs need SUID wrappers, can be configured further or are
+  # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
   # programs.gnupg.agent = {

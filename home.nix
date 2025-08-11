@@ -1,6 +1,8 @@
-{ pkgs, inputs, ... }:
-
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home = {
@@ -27,22 +29,22 @@
   home = {
     packages = with pkgs; [
       kitty
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
+      # # Adds the 'hello' command to your environment. It prints a friendly
+      # # "Hello, world!" when run.
+      # pkgs.hello
 
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+      # # It is sometimes useful to fine-tune packages, for example, by applying
+      # # overrides. You can do that directly here, just don't forget the
+      # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
+      # # fonts?
+      # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
 
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
+      # # You can also create simple shell scripts directly inside your
+      # # configuration. For example, this adds a command 'my-hello' to your
+      # # environment:
+      # (pkgs.writeShellScriptBin "my-hello" ''
+      #   echo "Hello, ${config.home.username}!"
+      # '')
     ];
   };
 
@@ -50,16 +52,16 @@
   # plain files is through 'home.file'.
   home = {
     file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
+      # # Building this configuration will create a copy of 'dotfiles/screenrc' in
+      # # the Nix store. Activating the configuration will then make '~/.screenrc' a
+      # # symlink to the Nix store copy.
+      # ".screenrc".source = dotfiles/screenrc;
 
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
+      # # You can also set the file content immediately.
+      # ".gradle/gradle.properties".text = ''
+      #   org.gradle.console=verbose
+      #   org.gradle.daemon.idletimeout=3600000
+      # '';
     };
   };
 
@@ -104,7 +106,7 @@
       enable = true;
       settings = {
         general = {
-          lock_cmd ="pidof hyprlock || hyprlock";
+          lock_cmd = "pidof hyprlock || hyprlock";
           before_sleep_cmd = "loginctl lock-session";
           after_sleep_cmd = "hyprctl dispatch dpms on";
         };
@@ -143,7 +145,49 @@
         defaultTimeout = 5000;
       };
     };
+
+    swaync = {
+      enable = true;
+      settings = {
+        positionX = "right";
+        positionY = "top";
+        layer = "overlay";
+        control-center-layer = "top";
+        layer-shell = true;
+        cssPriority = "application";
+        control-center-margin-top = 0;
+        control-center-margin-bottom = 0;
+        control-center-margin-right = 0;
+        control-center-margin-left = 0;
+        notification-2fa-action = true;
+        notification-inline-replies = false;
+        notification-icon-size = 64;
+        notification-body-image-height = 100;
+        notification-body-image-width = 200;
+      };
+
+      style = ''
+        .notification-row {
+          outline: none;
+        }
+  
+        .notification-row:focus,
+        .notification-row:hover {
+          background: @noti-bg-focus;
+        }
+  
+        .notification {
+          border-radius: 12px;
+          margin: 6px 12px;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.7),
+            0 2px 6px 2px rgba(0, 0, 0, 0.3);
+          padding: 0;
+        }
+      '';
+    };
   };
+
+  
 
   #xdg = {
   #  configFile = {
@@ -157,6 +201,151 @@
   programs = {
     home-manager = {
       enable = true;
+    };
+
+    fastfetch = {
+      enable = true;
+      settings = {
+        "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json";
+        logo = {
+          type = "builtin";
+          height = 15;
+          width = 30;
+          padding = {
+            top = 5;
+            left = 3;
+          };
+        };
+        modules = [
+          "break"
+          {
+            type = "custom";
+            format = "\u001b[90m┌──────────────────────Hardware──────────────────────┐";
+          }
+          {
+            type = "host";
+            key = " PC";
+            keyColor = "green";
+          }
+          {
+            type = "cpu";
+            key = "│ ├";
+            keyColor = "green";
+          }
+          {
+            type = "gpu";
+            key = "│ ├󰍛";
+            keyColor = "green";
+          }
+          {
+            type = "memory";
+            key = "│ ├󰍛";
+            keyColor = "green";
+          }
+          {
+            type = "disk";
+            key = "└ └";
+            keyColor = "green";
+          }
+          {
+            type = "custom";
+            format = "\u001b[90m└────────────────────────────────────────────────────┘";
+          }
+          "break"
+          {
+            type = "custom";
+            format = "\u001b[90m┌──────────────────────Software──────────────────────┐";
+          }
+          {
+            type = "os";
+            key = " OS";
+            keyColor = "yellow";
+          }
+          {
+            type = "kernel";
+            key = "│ ├";
+            keyColor = "yellow";
+          }
+          {
+            type = "bios";
+            key = "│ ├";
+            keyColor = "yellow";
+          }
+          {
+            type = "packages";
+            key = "│ ├󰏖";
+            keyColor = "yellow";
+          }
+          {
+            type = "shell";
+            key = "└ └";
+            keyColor = "yellow";
+          }
+          "break"
+          {
+            type = "de";
+            key = " DE";
+            keyColor = "blue";
+          }
+          {
+            type = "lm";
+            key = "│ ├";
+            keyColor = "blue";
+          }
+          {
+            type = "wm";
+            key = "│ ├";
+            keyColor = "blue";
+          }
+          {
+            type = "wmtheme";
+            key = "│ ├󰉼";
+            keyColor = "blue";
+          }
+          {
+            type = "terminal";
+            key = "└ └";
+            keyColor = "blue";
+          }
+          {
+            type = "custom";
+            format = "\u001b[90m└────────────────────────────────────────────────────┘";
+          }
+          "break"
+          {
+            type = "custom";
+            format = "\u001b[90m┌────────────────────Uptime / Age / DT────────────────────┐";
+          }
+          {
+            type = "command";
+            key = "  OS Age ";
+            keyColor = "magenta";
+            text = "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days";
+          }
+          {
+            type = "uptime";
+            key = "  Uptime ";
+            keyColor = "magenta";
+          }
+          {
+            type = "datetime";
+            key = "  DateTime ";
+            keyColor = "magenta";
+          }
+          {
+            type = "custom";
+            format = "\u001b[90m└─────────────────────────────────────────────────────────┘";
+          }
+          {
+            type = "colors";
+          }
+          {
+            type = "colors";
+            paddingLeft = 2;
+            symbol = "circle";
+          }
+        ];
+      };
     };
 
     lf = {
@@ -175,7 +364,7 @@
     };
 
     kitty = {
-      enable= true;
+      enable = true;
       settings = {
         font_family = "JetBrainsMono Nerd Font";
         font_size = 12;
@@ -230,6 +419,7 @@
             "wl-paste --type text --watch cliphist store"
             "wl-paste --type image --watch cliphist store"
             "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+            "swaync"
           ];
 
           general = {
@@ -343,6 +533,7 @@
             "$mainMod, L, exec, hyprlock"
             ",Print, exec, grim -g \"$(slurp)\" - | swappy -f -"
             "$mainMod SHIFT, C, exec, hyprpicker"
+            "$mainMod SHIFT, N, exec, swaync-client -t -sw"
 
             "$mainMod, left, movefocus, l"
             "$mainMod, right, movefocus, r"
@@ -409,8 +600,7 @@
               bar_precedence_over_border = true;
               bar_padding = 5;
               bar_button_padding = 5;
-              hyprbars-button =
-              [
+              hyprbars-button = [
                 "rgb(ff4040), 16, , hyprctl dispatch killactive"
                 "rgb(eeee11), 16, , hyprctl dispatch togglefloating"
               ];
